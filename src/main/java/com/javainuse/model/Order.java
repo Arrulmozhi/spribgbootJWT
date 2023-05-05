@@ -34,7 +34,7 @@ public class Order {
     private List<Item> items;
 
     @NotNull(message = "Cost cannot be null")
-    private BigDecimal cost;
+    private double cost;
 
    
 }

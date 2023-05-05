@@ -3,6 +3,7 @@ package com.javainuse.service;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.javainuse.model.Item;
 import com.javainuse.model.Order;
 import com.javainuse.repository.OrderRepository;
 
@@ -39,6 +40,14 @@ public class OrderService {
 			return orderRequest.getId();
 		}
 
-    
+
+		public double calculateCost(Order orderRequest) {
+			double calculatedCost = orderRequest.getItems().stream()
+	                .mapToDouble(item -> item.getQuantity() * orderRequest.getCost())
+	                .sum();
+			return orderRequest.getCost();
+		}
+
+	
 
 }
