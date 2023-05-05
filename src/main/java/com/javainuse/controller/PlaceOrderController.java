@@ -116,8 +116,22 @@ public class PlaceOrderController {
 	  return ResponseEntity.ok().body(orderList);
   }
 
-@GetMapping("/{Id}")
+@GetMapping("/order/{Id}")
 public ResponseEntity<?> getOrderDetails(HttpServletRequest request, @PathVariable("Id") String id) {
+	
+	  String tokenId = getTokenIdFromRequest(request);
+	  
+	  Optional<CacheData> optionalCacheData = cacheDataRepository.findById("JWT");
+	  LOGGER.info("INSIDE Postmapping  optionalCacheData" +optionalCacheData);
+	  String cacheToken = "";
+	  if (optionalCacheData.isPresent()) {
+         cacheToken = optionalCacheData.get().getValue();
+         LOGGER.info("INSIDE Postmapping" +cacheToken);
+	  }
+
+	  if (!isValidToken(tokenId,cacheToken)) {
+		  return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid token");
+	  }
     
     // Validate API source header
     if (!request.getHeader("api_source").equals("XYZ")) {
@@ -126,14 +140,14 @@ public ResponseEntity<?> getOrderDetails(HttpServletRequest request, @PathVariab
     System.out.println("ID::"+id);
     // Validate requester email header
     String requesterEmail = request.getHeader("api_requestor");
-    //if (!orderService.isValidEmail(requesterEmail)) {
-    //    return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Invalid requester email.");
-    //}
+    if (!orderService.isValidEmail(requesterEmail)) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Invalid requester email.");
+    }
     
-    List<Order> order1 = orderService.getOrderByRefId(id);
+    Optional<Order> order1 = orderService.getOrderByRefId(id,requesterEmail);
     
     // Fetch order details from MongoDB
-    Optional<Order> order = orderService.getOrder(id);
+    Optional<Order> order = orderService.getOrder(id,requesterEmail);
     if (order1 == null || order1.isEmpty()) {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body( "Unable to find the order for the given order id.");
     }

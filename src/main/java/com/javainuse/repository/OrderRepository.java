@@ -20,5 +20,8 @@ public interface OrderRepository extends MongoRepository<Order, String> {
 
 	List<Order> findByUserEmail(String userEmail);
 
+	Optional<Order> findByIdAndUserEmail(String id, String requesterEmail);
+	
+
 }
 

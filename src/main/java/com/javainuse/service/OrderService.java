@@ -48,6 +48,24 @@ public class OrderService {
 			return orderRequest.getCost();
 		}
 
+		public boolean isValidEmail(String requesterEmail) {
+			
+			if(requesterEmail != "")
+			{
+				return true;
+			}
+			return false;
+		}
+
+		public Optional<Order> getOrderByRefId(String id, String requesterEmail) {
+			return orderRepository.findByRefIdAndUserEmail(id,requesterEmail);
+		}
+
+		public Optional<Order> getOrder(String id, String requesterEmail) {
+			
+			return orderRepository.findByIdAndUserEmail(id,requesterEmail);
+		}
+
 	
 
 }
